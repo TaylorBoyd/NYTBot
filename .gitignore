@@ -1,5 +1,10 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+config.json
+lib/
+scripts/
+include/
+pyvenv.cfg
 *.py[cod]
 *$py.class
 
