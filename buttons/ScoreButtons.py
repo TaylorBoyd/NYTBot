@@ -150,7 +150,7 @@ class ScoreButtons(discord.ui.View):
                 await interaction.response.send_message("You have already submitted your scores for today.", ephemeral=True)
             else:
                 mini_time = (self.mini_minutes * 60) + (self.mini_seconds)
-                connections_score = (self.connections - (-4 + self.connection_lives))
+                connections_score = (self.connections + (-4 + self.connection_lives))
                 scores = NYT_scores(wordle_score=self.wordle,
                                     connections_score = connections_score,
                                     strands_score = self.strands,
