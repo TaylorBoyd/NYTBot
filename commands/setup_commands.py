@@ -16,6 +16,7 @@ class SetupCommands(commands.GroupCog, name="setup"):
     @app_commands.command(name="new_player", description="Add a new player to participate.")
     async def new_player(self, interaction: discord.Interaction):
         player = interaction.user.id
+        name = interaction.user.name
         engine = create_engine(config.db_path)
 
         with Session(engine) as session:
@@ -25,7 +26,7 @@ class SetupCommands(commands.GroupCog, name="setup"):
             if user:
                 await interaction.response.send_message("You are already registered with the bot!", ephemeral=True)
             else:
-                new_user = User(discord_id=player)
+                new_user = User(discord_id=player, discord_name=name)
                 first_channel = RegisteredPlayers(guild_id=interaction.guild.id, user_id=player)
                 session.add_all([new_user, first_channel])
                 session.commit()

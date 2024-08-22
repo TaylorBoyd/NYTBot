@@ -3,7 +3,7 @@ import config
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
 from typing import List, Optional
-from sqlalchemy import ForeignKey, String, Integer, Column, Time, Date, BigInteger
+from sqlalchemy import ForeignKey, String, Integer, Column, Time, Date, BigInteger, VARCHAR
 
 engine = create_engine(config.db_path, echo=True)
 
@@ -12,6 +12,7 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = "discord_user"
     discord_id = Column(BigInteger, primary_key=True)
+    discord_name = Column(String(50))
     answers: Mapped[List["NYT_scores"]] = relationship()
     channels: Mapped[List["RegisteredPlayers"]] = relationship()
 

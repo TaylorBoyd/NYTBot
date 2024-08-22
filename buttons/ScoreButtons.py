@@ -4,7 +4,7 @@ import datetime
 from sqlalchemy import create_engine, select, and_
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
 from database_init import User, RegisteredPlayers, NYT_scores
-from datetime import date
+from datetime import date, datetime, timedelta
 import config
 
 class ScoreButtons(discord.ui.View):
@@ -145,8 +145,10 @@ class ScoreButtons(discord.ui.View):
     async def finish(self, interaction: discord.Interaction, button: discord.ui.Button):
         player = interaction.user.id
         engine = create_engine(config.db_path)
+        fixed_time = (datetime.today() - timedelta(hours=4))
         with Session(engine) as session:
-            if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player), (NYT_scores.date) == date.today())).all():
+            if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player), (NYT_scores.date) ==
+                                                                                            fixed_time.date())).all():
                 await interaction.response.send_message("You have already submitted your scores for today.", ephemeral=True)
             else:
                 mini_time = (self.mini_minutes * 60) + (self.mini_seconds)
@@ -155,11 +157,12 @@ class ScoreButtons(discord.ui.View):
                                     connections_score = connections_score,
                                     strands_score = self.strands,
                                     mini_time = mini_time,
-                                    date=date.today(),
+                                    date=fixed_time.date(),
                                     user_id=player)
                 session.add_all([scores])
                 session.commit()
-        await interaction.response.send_message(f"{interaction.user.mention}, your scores are submitted!", ephemeral=True)
+        await interaction.response.send_message(f"{interaction.user.mention}, your scores are submitted!",
+                                                ephemeral=True, delete_after=180)
 
     @discord.ui.button(label="Reset", style=discord.ButtonStyle.danger)
     async def reset(self, interaction: discord.Interaction, button: discord.ui.Button):

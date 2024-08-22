@@ -3,9 +3,9 @@ from discord.ext import commands
 from sqlalchemy import create_engine, select, and_
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
 from database_init import User, RegisteredPlayers, NYT_scores
-from datetime import date
 from buttons.ScoreButtons import ScoreButtons
 import datetime
+from datetime import date, datetime, timedelta
 import config
 
 class ButtonListener(commands.Cog):
@@ -18,7 +18,7 @@ class ButtonListener(commands.Cog):
             player = interaction.user.id
             custom_id = interaction.data["custom_id"]
             engine = create_engine(config.db_path)
-
+            fixed_time = (datetime.today() - timedelta(hours=4))
 
             if custom_id == "submit_scores":
                 with Session(engine) as session:
@@ -26,7 +26,8 @@ class ButtonListener(commands.Cog):
                     if not session.scalars(select(User).where((User.discord_id) == player)).all():
                         await interaction.response.send_message("Please register with the bot first. '/setup new_player'.", ephemeral=True)
                     else:
-                        if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player), (NYT_scores.date) == date.today())).all():
+                        if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player),
+                                                                    (NYT_scores.date) == fixed_time.date())).all():
                             await interaction.response.send_message("You have already submitted your scores for today.", ephemeral=True)
                         else:
                             view = ScoreButtons(interaction, 0, 0, 4, 0, 0, 0)
@@ -35,4 +36,5 @@ class ButtonListener(commands.Cog):
                                                                     f"\n> Connections Made: 0"
                                                                     f"\n> Connections Lives: 4"
                                                                     f"\n> Strands Hints Used: 0"
-                                                                    f"\n> Mini Time: 00:00", ephemeral=True, view=view)
+                                                                    f"\n> Mini Time: 00:00", ephemeral=True,
+                                                                    view=view, delete_after=180)
