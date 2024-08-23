@@ -9,4 +9,5 @@ def daily_score_helper(wordle: int, connections: int, strands: int, minutes: int
 
     return(wordle_score+connections_score+strands_score+mini_score)
 
+print(daily_score_helper(4, 2, 1, 1))
 

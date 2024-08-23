@@ -164,7 +164,8 @@ class ScoreButtons(discord.ui.View):
                                     daily_score=daily_score)
                 session.add_all([scores])
                 session.commit()
-        await interaction.response.send_message(f"{interaction.user.mention}, your scores are submitted!",
+        await interaction.response.send_message(f"{interaction.user.mention}, your scores are submitted! Today's "
+                                                f"score was {daily_score}",
                                                 ephemeral=True, delete_after=180)
 
     @discord.ui.button(label="Reset", style=discord.ButtonStyle.danger)
