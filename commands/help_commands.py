@@ -25,6 +25,17 @@ class HelpCommands(commands.GroupCog, name="help"):
                '\n> If you would like to register on a leaderboard in another server, use the "/setup leaderboard_register" command in that server')
         await interaction.response.send_message(msg)
 
+    @app_commands.command(name="scoring", description="Explains how the scoring system works.")
+    async def scoring(self, interaction: discord.Interaction):
+        msg = ('Try to score as many points as possible each day! 30 points is the maximum possible and daily '
+               'tiebreaks are done by fastest mini time.'
+               '\n> Wordle: One point lost for each guess. Maximum of 6 points at first guess.'
+               '\n> Connections: No mistakes = 8 points. One point lost for each incorrect guess and missed connection.'
+               '\n> Strands: Zero hints = 8 points, one point lost for each hint used.'
+               '\n> Crossword Mini: Under 1:00 is 8 points, under 2:00 is 7 points, under 3:00 is 6 points, '
+               'etc...Cannot go below zero')
+        await interaction.response.send_message(msg, ephemeral=True)
+
     #@app_commands.command(name="test1", description="test process")
     #async def test1(self, interaction: discord.Interaction):
     #    channel = self.bot.get_channel(1274399471723348030)

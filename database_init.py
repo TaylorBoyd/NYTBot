@@ -29,6 +29,7 @@ class NYT_scores(Base):
     date = Column(Date)
     #user_id: Mapped[int] = mapped_column(ForeignKey("discord_user.discord_id"))
     user_id = Column(BigInteger, ForeignKey("discord_user.discord_id"))
+    daily_score = Column(Integer)
 
 class RegisteredPlayers(Base):
     __tablename__ = "registered_players"
