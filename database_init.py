@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, rela
 from typing import List, Optional
 from sqlalchemy import ForeignKey, String, Integer, Column, Time, Date, BigInteger, VARCHAR
 
-engine = create_engine(config.db_path, echo=True)
+engine = create_engine(config.db_path)
 
 class Base(DeclarativeBase):
     pass

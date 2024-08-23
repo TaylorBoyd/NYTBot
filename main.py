@@ -4,6 +4,7 @@ from discord.ext import commands
 from commands.help_commands import HelpCommands
 from commands.setup_commands import SetupCommands
 from listener.ButtonListener import ButtonListener
+from helpers.ScoreHelper import ScoreHelper
 
 
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.default())
@@ -17,6 +18,5 @@ async def on_ready():
     print("Bot is now ready")
 
 bot.run(config.token)
-
 
 
