@@ -7,6 +7,8 @@ def tester(month, day, year):
     print(x)
 
 
-players = ScoreHelper.get_server_players(399680970581737492)
+#players = ScoreHelper.get_server_players(399680970581737492)
 
-print(ScoreHelper.get_server_daily(players, datetime.date(2024, 8, 22)))
+#print(ScoreHelper.get_server_daily(players, datetime.date(2024, 8, 25)))
+
+print(datetime.date(2024, 8, 25))

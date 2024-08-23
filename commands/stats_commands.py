@@ -14,10 +14,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="server_daily_leaderboard", description="Check the daily winner for this server. Choose "
-                                                                  "which day. "
-                                                           "Choose which day or leave blank to see today's "
-                                                           "leaderboard.")
+    @app_commands.command(name="server_daily_leaderboard", description="Check the daily winner for this server.")
     async def server_daily_leaderboard(self, interaction: discord.Interaction,
                            month: int, day: int, year: Optional[int]):
         """
@@ -38,8 +35,18 @@ class StatsCommands(commands.GroupCog, name="stats"):
         except ValueError:
             await interaction.response.send_message("That is not a valid date.", ephemeral=True)
             return
-
+        await interaction.response.defer(thinking=True)
         players = ScoreHelper.get_server_players(server)
         scores = ScoreHelper.get_server_daily(players, score_date)
-        msg = ""
-        pass
+        if not scores:
+            await interaction.followup.send(f"There are no scores for {score_date} on this server")
+            return
+        msg = f"Winners for {score_date}!"
+        place = 1
+        while place < 6:
+            if not scores:
+                await interaction.followup.send(msg)
+                return
+            player = scores.pop(0)
+            msg += f"\n> {place}. <@{player[0]}> with {player[1]} points and a mini time of {player[2]} seconds."
+            place += 1
