@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, rela
 from database_init import User, RegisteredPlayers, NYT_scores
 from datetime import date, datetime, timedelta
 from helpers.daily_score_helper import daily_score_helper
+from helpers.ScoreHelper import ScoreHelper
 import config
 
 class ScoreButtons(discord.ui.View):
@@ -154,7 +155,7 @@ class ScoreButtons(discord.ui.View):
             else:
                 mini_time = (self.mini_minutes * 60) + (self.mini_seconds)
                 connections_score = (self.connections + (-4 + self.connection_lives))
-                daily_score = daily_score_helper(self.wordle, connections_score, self.strands, self.mini_minutes)
+                daily_score = ScoreHelper.generate_score(self.wordle, connections_score, self.strands, self.mini_minutes)
                 scores = NYT_scores(wordle_score=self.wordle,
                                     connections_score = connections_score,
                                     strands_score = self.strands,
