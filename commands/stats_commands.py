@@ -50,3 +50,4 @@ class StatsCommands(commands.GroupCog, name="stats"):
             player = scores.pop(0)
             msg += f"\n> {place}. <@{player[0]}> with {player[1]} points and a mini time of {player[2]} seconds."
             place += 1
+        await interaction.followup.send(msg)
