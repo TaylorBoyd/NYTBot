@@ -1,13 +1,13 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+import datetime
 from sqlalchemy import create_engine, select, and_
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
-from database_init import User, RegisteredPlayers
-from datetime import date
+from database_init import User, RegisteredPlayers, NYT_scores
+from datetime import date, datetime, timedelta
 from typing import Optional
 from helpers.ScoreHelper import ScoreHelper
-import datetime
 import config
 
 class StatsCommands(commands.GroupCog, name="stats"):
@@ -51,3 +51,64 @@ class StatsCommands(commands.GroupCog, name="stats"):
             msg += f"\n> {place}. <@{player[0]}> with {player[1]} points and a mini time of {player[2]} seconds."
             place += 1
         await interaction.followup.send(msg)
+
+    @app_commands.command(name="submit", description="Submit a score for today.")
+    async def submit(self, interaction: discord.Interaction, wordle: int, connections: int, connection_lives: int,
+                     strands: int, mini: int):
+        """
+        :param wordle: Input the number of wordle guesses. 7 means you did not guess the word
+        :param connections: Number of connections made
+        :param connection_lives: How many connections mistakes do you have left?
+        :param strands: How many hints did you use for strands?
+        :param mini: How many seconds did it take to complete the mini?
+        """
+        player = interaction.user.id
+        fixed_time = (datetime.today() - timedelta(hours=4))
+        engine = create_engine(config.db_path)
+
+        """
+        Preventing impossible inputs first.
+        """
+        if wordle < 1 or wordle > 7:
+            await interaction.response.send_message("You input an invalid wordle score. It must be between 1 and 7", ephemeral=True)
+            return
+        if connections < 0 or connections > 4:
+            await interaction.response.send_message("You input an invalid connections score. It must be between 0 and 4",
+                                                    ephemeral=True)
+            return
+        if connections_lives < 0 or connection_lives > 4:
+            await interaction.response.send_message(
+                "You input an invalid connections lives score. It must be between 0 and 4",
+                ephemeral=True)
+            return
+        if strands < 0:
+            await interaction.response.send_message(
+                "Hints for strands must be greater than zero.",
+                ephemeral=True)
+            return
+        if mini < 0:
+            await interaction.response.send_message(
+                "Scores for the mini cannot be negative. Please input how many seconds it took to complete.",
+                ephemeral=True)
+            return
+
+        with Session(engine) as session:
+            if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player), (NYT_scores.date) ==
+                                                        fixed_time.date())).all():
+                await interaction.response.send_message("You have already submitted your scores for today.",
+                                                        ephemeral=True)
+            else:
+                connections_score = (connections + (-4 + connection_lives))
+                daily_score = ScoreHelper.generate_score(wordle, connections_score, strands, mini)
+                scores = NYT_scores(wordle_score=wordle,
+                                    connections_score=connections_score,
+                                    strands_score=strands,
+                                    mini_time=mini,
+                                    date=fixed_time.date(),
+                                    user_id=player,
+                                    daily_score=daily_score)
+                session.add_all([scores])
+                session.commit()
+        await interaction.response.send_message(f"{interaction.user.mention}, your scores are submitted! Today's "
+                                                f"score was {daily_score}",
+                                                ephemeral=True, delete_after=180)
