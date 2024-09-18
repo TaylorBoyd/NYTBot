@@ -76,7 +76,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
             await interaction.response.send_message("You input an invalid connections score. It must be between 0 and 4",
                                                     ephemeral=True)
             return
-        if connections_lives < 0 or connection_lives > 4:
+        if connection_lives < 0 or connection_lives > 4:
             await interaction.response.send_message(
                 "You input an invalid connections lives score. It must be between 0 and 4",
                 ephemeral=True)
@@ -93,8 +93,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
             return
 
         with Session(engine) as session:
-            if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player), (NYT_scores.date) ==
-                                                        fixed_time.date())).all():
+            if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player), (NYT_scores.date) == fixed_time.date())).all():
                 await interaction.response.send_message("You have already submitted your scores for today.",
                                                         ephemeral=True)
             else:
