@@ -98,7 +98,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
                                                         ephemeral=True)
             else:
                 connections_score = (connections + (-4 + connection_lives))
-                daily_score = ScoreHelper.generate_score(wordle, connections_score, strands, mini)
+                daily_score = ScoreHelper.generate_score(wordle, connections_score, strands, (mini / 60))
                 scores = NYT_scores(wordle_score=wordle,
                                     connections_score=connections_score,
                                     strands_score=strands,
