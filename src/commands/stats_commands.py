@@ -63,7 +63,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
         :param mini: How many seconds did it take to complete the mini?
         """
         player = interaction.user.id
-        fixed_time = (datetime.today() - timedelta(hours=4))
+        fixed_time = (datetime.date.today() - timedelta(hours=4))
         engine = create_engine(config.db_path)
 
         """
