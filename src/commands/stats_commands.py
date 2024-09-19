@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+import datetime
 from sqlalchemy import create_engine, select, and_
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
 from database_init import User, RegisteredPlayers, NYT_scores
 from datetime import date, datetime, timedelta
-import datetime
 from typing import Optional
 from helpers.ScoreHelper import ScoreHelper
 import config
@@ -26,7 +26,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
         score_month = month
         score_day = day
         if not year:
-            score_year = datetime.date.today().year
+            score_year = datetime.today().year
         else:
             score_year = year
 
@@ -63,7 +63,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
         :param mini: How many seconds did it take to complete the mini?
         """
         player = interaction.user.id
-        fixed_time = (datetime.date.today() - timedelta(hours=4))
+        fixed_time = (datetime.today() - timedelta(hours=4))
         engine = create_engine(config.db_path)
 
         """
@@ -98,7 +98,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
                                                         ephemeral=True)
             else:
                 connections_score = (connections + (-4 + connection_lives))
-                daily_score = ScoreHelper.generate_score(wordle, connections_score, strands, (mini / 60))
+                daily_score = ScoreHelper.generate_score(wordle, connections_score, strands, int((mini / 60)))
                 scores = NYT_scores(wordle_score=wordle,
                                     connections_score=connections_score,
                                     strands_score=strands,
