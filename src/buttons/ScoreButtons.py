@@ -1,6 +1,6 @@
 import discord
 from discord.ui import Button, View
-import datetime
+#import datetime
 from sqlalchemy import create_engine, select, and_
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
 from database_init import User, RegisteredPlayers, NYT_scores
