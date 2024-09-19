@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import datetime
+#import datetime
 from sqlalchemy import create_engine, select, and_
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
 from database_init import User, RegisteredPlayers, NYT_scores
