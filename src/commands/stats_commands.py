@@ -43,7 +43,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
             return
         msg = f"Winners for {score_date}!"
         place = 1
-        while place < 6:
+        while place < 11:
             if not scores:
                 await interaction.followup.send(msg)
                 return
