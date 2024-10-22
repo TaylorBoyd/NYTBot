@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import datetime
-from sqlalchemy import create_engine, select, and_
+from sqlalchemy import create_engine, select, and_, delete
 from sqlalchemy.orm import Session, DeclarativeBase, Mapped, mapped_column, relationship
 from database_init import User, RegisteredPlayers, NYT_scores
 from datetime import date, datetime, timedelta
@@ -86,7 +86,7 @@ class StatsCommands(commands.GroupCog, name="stats"):
                 "Hints for strands must be greater than zero.",
                 ephemeral=True)
             return
-        if mini < 0:
+        if mini <= 0:
             await interaction.response.send_message(
                 "Scores for the mini cannot be negative. Please input how many seconds it took to complete.",
                 ephemeral=True)
@@ -111,3 +111,18 @@ class StatsCommands(commands.GroupCog, name="stats"):
         await interaction.response.send_message(f"{interaction.user.mention}, your scores are submitted! Today's "
                                                 f"score was {daily_score}",
                                                 ephemeral=True, delete_after=180)
+
+    @app_commands.command(name="delete", description="Delete your score for today. Useful if you've made a mistake entering.")
+    async def delete(self, interaction: discord.Interaction):
+        player = interaction.user.id
+        fixed_time = (datetime.today() - timedelta(hours=4))
+        engine = create_engine(config.db_path)
+        with Session(engine) as session:
+            if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player),(NYT_scores.date) == fixed_time.date())).all():
+                delete(NYT_scores).where(and_((NYT_scores.user_id == player),(NYT_scores.date) == fixed_time.date()))
+                session.commit()
+                await interaction.response.send_message("Today's scores are deleted.",
+                                                        ephemeral=True)
+            else:
+                await interaction.response.send_message("You have not submitted a score today!",
+                                                        ephemeral=True)
