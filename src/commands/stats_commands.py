@@ -119,7 +119,9 @@ class StatsCommands(commands.GroupCog, name="stats"):
         engine = create_engine(config.db_path)
         with Session(engine) as session:
             if session.scalars(select(NYT_scores).where(and_(NYT_scores.user_id == player),(NYT_scores.date) == fixed_time.date())).all():
-                delete(NYT_scores).where(and_((NYT_scores.user_id == player),(NYT_scores.date) == fixed_time.date()))
+                del1 = delete(NYT_scores).where(and_((NYT_scores.user_id == player),(NYT_scores.date) ==
+                                                  fixed_time.date()))
+                session.execute(del1)
                 session.commit()
                 await interaction.response.send_message("Today's scores are deleted.",
                                                         ephemeral=True)
